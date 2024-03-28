@@ -1,4 +1,8 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.26)
+
+if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+  set(CMAKE_CUDA_ARCHITECTURES 75)
+endif()
 
 project(CUDA-GEMM-Optimization VERSION 0.0.1 LANGUAGES CXX CUDA)
 

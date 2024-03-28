@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.26)
 
 project(CUDA-GEMM-Algorithms VERSION 0.0.1 LANGUAGES CXX CUDA)
 
@@ -16,20 +16,21 @@ add_library(
     cuda_gemm 
     SHARED 
     cuda_gemm_utils.cu 
-    00_non_coalesced_global_memory_access.cu
-    01_coalesced_global_memory_access.cu
-    02_2d_block_tiling.cu
-    02_2d_block_tiling_vectorized_memory_access.cu
-    03_2d_block_tiling_1d_thread_tiling.cu
-    03_2d_block_tiling_1d_thread_tiling_vectorized_memory_access.cu
-    04_2d_block_tiling_2d_thread_tiling.cu
-    04_2d_block_tiling_2d_thread_tiling_vectorized_memory_access.cu
-    05_2d_block_tiling_2d_thread_tiling_matrix_transpose.cu
-    05_2d_block_tiling_2d_thread_tiling_matrix_transpose_vectorized_memory_access.cu
-    06_2d_block_tiling_2d_warp_tiling_2d_thread_tiling_matrix_transpose.cu
-    06_2d_block_tiling_2d_warp_tiling_2d_thread_tiling_matrix_transpose_vectorized_memory_access.cu
-    07_2d_block_tiling_2d_warp_tiling_2d_thread_tiling_matrix_transpose_wmma.cu
-    07_2d_block_tiling_2d_warp_tiling_2d_thread_tiling_matrix_transpose_wmma_vectorized_memory_access.cu
+    00_lly_gemm.cu
+    # 00_non_coalesced_global_memory_access.cu
+    # 01_coalesced_global_memory_access.cu
+    # 02_2d_block_tiling.cu
+    # 02_2d_block_tiling_vectorized_memory_access.cu
+    # 03_2d_block_tiling_1d_thread_tiling.cu
+    # 03_2d_block_tiling_1d_thread_tiling_vectorized_memory_access.cu
+    # 04_2d_block_tiling_2d_thread_tiling.cu
+    # 04_2d_block_tiling_2d_thread_tiling_vectorized_memory_access.cu
+    # 05_2d_block_tiling_2d_thread_tiling_matrix_transpose.cu
+    # 05_2d_block_tiling_2d_thread_tiling_matrix_transpose_vectorized_memory_access.cu
+    # 06_2d_block_tiling_2d_warp_tiling_2d_thread_tiling_matrix_transpose.cu
+    # 06_2d_block_tiling_2d_warp_tiling_2d_thread_tiling_matrix_transpose_vectorized_memory_access.cu
+    # 07_2d_block_tiling_2d_warp_tiling_2d_thread_tiling_matrix_transpose_wmma.cu
+    # 07_2d_block_tiling_2d_warp_tiling_2d_thread_tiling_matrix_transpose_wmma_vectorized_memory_access.cu
 )
 
 # Add the include directory of the library to the include directories of the project
@@ -41,9 +42,9 @@ set_target_properties(cuda_gemm PROPERTIES CUDA_ARCHITECTURES native)
 install(TARGETS cuda_gemm DESTINATION lib)
 install(FILES ${CUDA_GEMM_HEADERS} DESTINATION include)
 
-add_executable(profile_cuda_gemm_fp32 profile_cuda_gemm_fp32.cu)
-target_link_libraries(profile_cuda_gemm_fp32 cuda_gemm CUDA::cublas)
-set_target_properties(profile_cuda_gemm_fp32 PROPERTIES CUDA_ARCHITECTURES native)
+# add_executable(profile_cuda_gemm_fp32 profile_cuda_gemm_fp32.cu)
+# target_link_libraries(profile_cuda_gemm_fp32 cuda_gemm CUDA::cublas)
+# set_target_properties(profile_cuda_gemm_fp32 PROPERTIES CUDA_ARCHITECTURES native)
 
 add_executable(profile_cuda_gemm_fp16 profile_cuda_gemm_fp16.cu)
 target_link_libraries(profile_cuda_gemm_fp16 cuda_gemm CUDA::cublas)
