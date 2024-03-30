@@ -17,6 +17,7 @@ add_library(
     SHARED 
     cuda_gemm_utils.cu 
     00_lly_gemm.cu
+    01_lly_gemm.cu
     # 00_non_coalesced_global_memory_access.cu
     # 01_coalesced_global_memory_access.cu
     # 02_2d_block_tiling.cu

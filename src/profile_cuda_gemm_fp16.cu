@@ -14,9 +14,9 @@ int main()
     __half const fp16_abs_tol{__float2half(5.0e-2f)};
     double const fp16_rel_tol{1.0e-1f};
 
-    constexpr size_t m{4096U};
-    constexpr size_t k{4096U};
-    constexpr size_t n{4096U};
+    constexpr size_t m{5376u};
+    constexpr size_t k{2048u};
+    constexpr size_t n{5376u};
 
     constexpr size_t lda{(k + 16U - 1U) / 16U * 16U};
     constexpr size_t ldb{(n + 16U - 1U) / 16U * 16U};
@@ -43,7 +43,9 @@ int main()
                            size_t, __half const*, size_t, __half const*,
                            __half*, size_t, cudaStream_t)>>> const
         gemm_fp16_kernel_launch_functions{
-            {"Custom lly GEMM Kernel V00", launch_lly_gemm_kernel_v00<__half>}};
+            {"Custom lly GEMM Kernel V00", launch_lly_gemm_kernel_v00<__half>},
+            {"Custom lly GEMM Kernel V01", launch_lly_gemm_kernel_v01<__half>},
+        };
 
     for (auto const& gemm_fp16_kernel_launch_function :
          gemm_fp16_kernel_launch_functions)
