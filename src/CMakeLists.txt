@@ -50,3 +50,11 @@ install(FILES ${CUDA_GEMM_HEADERS} DESTINATION include)
 add_executable(profile_cuda_gemm_fp16 profile_cuda_gemm_fp16.cu)
 target_link_libraries(profile_cuda_gemm_fp16 cuda_gemm CUDA::cublas)
 set_target_properties(profile_cuda_gemm_fp16 PROPERTIES CUDA_ARCHITECTURES native)
+
+add_executable(smem_bandwidth smem_bandwidth.cu)
+target_link_libraries(smem_bandwidth CUDA::cublas)
+set_target_properties(smem_bandwidth PROPERTIES CUDA_ARCHITECTURES native)
+
+add_executable(dram_bandwidth dram_bandwidth.cu)
+target_link_libraries(dram_bandwidth CUDA::cublas)
+set_target_properties(dram_bandwidth PROPERTIES CUDA_ARCHITECTURES native)

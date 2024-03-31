@@ -73,8 +73,8 @@ void launch_lly_gemm_kernel_v01(size_t m, size_t n, size_t k, T const* alpha,
                                 cudaStream_t stream)
 {
     dim3 const block_dim{32u, 2u, 2u};
-    dim3 const grid_dim{(unsigned int)(m + 127) / 128u,
-                        (unsigned int)(n + 127) / 128u};
+    dim3 const grid_dim{(unsigned int)(n + 127) / 128u,
+                        (unsigned int)(m + 127) / 128u};
     const int smem_size = 128 * 128 * sizeof(T);
     lly_sgemm_v1<T><<<grid_dim, block_dim, smem_size, stream>>>(
         m, n, k, *alpha, A, lda, B, ldb, *beta, C, ldc);
