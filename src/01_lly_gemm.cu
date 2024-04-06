@@ -40,15 +40,15 @@ __global__ void lly_sgemm_v1(size_t m, size_t n, size_t k, T alpha, T const* A,
     }
     for (int ko = 0; ko < k / KI; ko++)
     {
-        loadSmemA(SA, A, m, k, ko);
-        loadSmemB(SB, B, n, k, ko);
+        loadSmemA<T>(SA, A, m, k, ko);
+        loadSmemB<T>(SB, B, n, k, ko);
         __syncthreads();
         // step_k = 2
         for (int ki = 0; ki < KI / KII; ki++)
         {
             // 64x64x16 mma for each warp
-            loadFragA(FragA, SA, ki);
-            loadFragB(FragB, SB, ki);
+            loadFragA<T>(FragA, SA, ki);
+            loadFragB<T>(FragB, SB, ki);
             for (int mii = 0; mii < fa_size; mii++)
             {
                 for (int nii = 0; nii < fb_size; nii++)
@@ -61,9 +61,9 @@ __global__ void lly_sgemm_v1(size_t m, size_t n, size_t k, T alpha, T const* A,
             }
         }
     }
-    storeAccum(SC, Accum);
+    storeAccum<T>(SC, Accum);
     __syncthreads();
-    storeSmemC(C, SC, m, n);
+    storeSmemC<T>(C, SC, m, n);
 }
 
 template <typename T>

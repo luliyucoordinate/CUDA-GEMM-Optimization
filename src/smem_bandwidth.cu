@@ -11,7 +11,7 @@ const int ROUND = 512;
 
 __global__ void load_smem_v1(const half* A, int K)
 {
-    extern __shared__ uint8_t smem[];
+    extern __shared__ half smem[];
     // load 128 * 32
     int tx = threadIdx.x;
     int ty = threadIdx.y;
@@ -28,7 +28,7 @@ __global__ void load_smem_v1(const half* A, int K)
 
 __global__ void load_smem_v2(const half* A, int K)
 {
-    extern __shared__ uint8_t smem[];
+    extern __shared__ half smem[];
     // load 128 * 32
     int tx = threadIdx.x;
     int ty = threadIdx.y;
@@ -60,6 +60,43 @@ __global__ void load_smem_v2(const half* A, int K)
             int S_index = ax * 256 + sy * 32 + sz * 16 + am;
             smem[S_index] = A[A_cindex];
         }
+    }
+}
+
+__global__ void load_smem_v3(const half* A, half* B, int K)
+{
+    extern __shared__ half smem[];
+    // load 128 * 32
+    int tx = threadIdx.x;
+    int ty = threadIdx.y;
+    int tz = threadIdx.z;
+    int tid = tz * 64 + ty * 32 + tx;
+
+    for (int i = 0; i < 32; i++)
+    {
+        int s_index = tid / 16 * 512 + tid % 16 * 16 + i / 16 * 256 + i % 16;
+        int a_index = tid * 32 + i;
+        smem[s_index] = A[a_index];
+        B[s_index] = smem[s_index];
+    }
+}
+
+__global__ void load_smem_v4(const half* A, half* B, int K)
+{
+    extern __shared__ half smem[];
+    // load 128 * 32
+    int tx = threadIdx.x;
+    int ty = threadIdx.y;
+    int tz = threadIdx.z;
+    int tid = tz * 64 + ty * 32 + tx;
+
+    for (int i = 0; i < 32; i++)
+    {
+        int s_index = tid / 32 % 4 * 16 + tid / 16 % 2 * 256 + tid % 16 +
+                      i / 4 * 512 + i % 4 * 64;
+        int a_index = tid + i * 128;
+        smem[s_index] = A[a_index];
+        B[s_index] = smem[s_index];
     }
 }
 
@@ -206,7 +243,8 @@ int main()
     half* dummy_data;
     const uint32_t data_M = 128;
     const uint32_t data_N = 32;
-    const uint32_t data_bytes = data_M * data_N * sizeof(half);
+    const uint32_t data_size = data_M * data_N;
+    const uint32_t data_bytes = data_size * sizeof(half);
 
     cudaMalloc(&dummy_data, data_bytes);
     for (int i = 0; i < WARMUP; i++)
@@ -217,7 +255,6 @@ int main()
     cudaEventCreate(&start);
     cudaEventCreate(&stop);
     cudaDeviceSynchronize();
-    // auto start = std::chrono::high_resolution_clock::now();
     cudaEventRecord(start);
     load_smem_v1<<<grid_dim, block_dim, data_bytes>>>(dummy_data, data_N);
     cudaEventRecord(stop);
@@ -232,7 +269,6 @@ int main()
         load_smem_v2<<<grid_dim, block_dim, data_bytes>>>(dummy_data, data_N);
     }
     cudaDeviceSynchronize();
-    // auto start = std::chrono::high_resolution_clock::now();
     cudaEventRecord(start);
     load_smem_v2<<<grid_dim, block_dim, data_bytes>>>(dummy_data, data_N);
     cudaEventRecord(stop);
